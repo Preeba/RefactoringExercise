@@ -2,7 +2,6 @@ package org.example.controller;
 
 import org.example.model.Product;
 import org.example.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,26 +12,21 @@ import java.util.List;
 @RequestMapping("/api/products")
 public class ProductController {
 
-    private final ProductService productServices;
+    private final ProductService productService;
 
-    @Autowired
-    public ProductController(ProductService ProductServices) {
-        this.productServices = ProductServices;
+    public ProductController(ProductService productServices) {
+        this.productService = productServices;
     }
 
-    @GetMapping()
+    //curl --location 'localhost:8080/api/products'
+    @GetMapping
     public ResponseEntity<List<Product>> getProducts() {
-        List<Product> products = productServices.getProducts();
-        if (products.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        } else {
-            return ResponseEntity.ok(products);
-        }
+        return ResponseEntity.ok(productService.getProducts());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(@PathVariable Long id) {
-        return productServices.getProductById(id)
+        return productService.getProductById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -40,17 +34,17 @@ public class ProductController {
     @GetMapping("/{name}")
     public ResponseEntity<?> getByName(@RequestParam String name) {
         try {
-            return ResponseEntity.ok(productServices.getByName(name));
+            return ResponseEntity.ok(productService.getByName(name));
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }
 
-    @PostMapping("/add")
+    @PostMapping
     public ResponseEntity<?> addProduct(@RequestBody Product product) {
         try {
-            Product savedProduct = productServices.addProduct(product);
+            Product savedProduct = productService.addProduct(product);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -61,7 +55,7 @@ public class ProductController {
     @GetMapping("/category/{category}")
     public ResponseEntity<?> getByCategory(@PathVariable String category) {
         try {
-            return ResponseEntity.ok(productServices.getByCategory(category));
+            return ResponseEntity.ok(productService.getByCategory(category));
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.notFound().build();
