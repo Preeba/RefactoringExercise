@@ -16,14 +16,12 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    @Autowired
     public ProductService(ProductRepository productRepository){
         this.productRepository = productRepository;
     }
 
-
     public List<Product> getProducts() {
-        return this.productRepository.findAll();
+        return productRepository.findAll();
     }
 
     public Optional<Product> getProductById(Long id) {
